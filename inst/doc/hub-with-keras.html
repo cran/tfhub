@@ -1,44 +1,57 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
 <title>TensorFlow Hub with Keras</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -47,9 +60,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -116,9 +129,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,7 +297,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -312,34 +323,34 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </ol>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(keras)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(tfhub)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(magick)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(keras)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(tfhub)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(magick)</span></code></pre></div>
 </div>
 <div id="an-imagenet-classifier" class="section level2">
 <h2>An ImageNet classifier</h2>
 <div id="download-the-classifier" class="section level3">
 <h3>Download the classifier</h3>
 <p>Use <code>layer_hub</code> to load a mobilenet and transform it into a Keras layer. Any TensorFlow 2 compatible image classifier URL from tfhub.dev will work here.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">classifier_url &lt;-<span class="st"> &quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2&quot;</span> </a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">mobilenet_layer &lt;-<span class="st"> </span><span class="kw">layer_hub</span>(<span class="dt">handle =</span> classifier_url)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>classifier_url &lt;-<span class="st"> &quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2&quot;</span> </span>
+<span id="cb2-2"><a href="#cb2-2"></a>mobilenet_layer &lt;-<span class="st"> </span><span class="kw">layer_hub</span>(<span class="dt">handle =</span> classifier_url)</span></code></pre></div>
 <p>We can then create our Keras model:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">input &lt;-<span class="st"> </span><span class="kw">layer_input</span>(<span class="dt">shape =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>, <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">output &lt;-<span class="st"> </span>input <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">mobilenet_layer</span>()</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">model &lt;-<span class="st"> </span><span class="kw">keras_model</span>(input, output)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>input &lt;-<span class="st"> </span><span class="kw">layer_input</span>(<span class="dt">shape =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>, <span class="dv">3</span>))</span>
+<span id="cb3-2"><a href="#cb3-2"></a>output &lt;-<span class="st"> </span>input <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="st">  </span><span class="kw">mobilenet_layer</span>()</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>model &lt;-<span class="st"> </span><span class="kw">keras_model</span>(input, output)</span></code></pre></div>
 </div>
 <div id="run-it-on-a-single-image" class="section level3">
 <h3>Run it on a single image</h3>
 <p>Download a single image to try the model on.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">img &lt;-<span class="st"> </span><span class="kw">image_read</span>(<span class="st">'https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg'</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">  </span><span class="kw">image_resize</span>(<span class="dt">geometry =</span> <span class="st">&quot;224x224x3!&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">image_data</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">as.numeric</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">  </span>abind<span class="op">::</span><span class="kw">abind</span>(<span class="dt">along =</span> <span class="dv">0</span>) <span class="co"># expand to batch dimension</span></a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw">predict</span>(model, img)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">mobilenet_decode_predictions</span>(result[,<span class="op">-</span><span class="dv">1</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>])</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>img &lt;-<span class="st"> </span><span class="kw">image_read</span>(<span class="st">&#39;https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">  </span><span class="kw">image_resize</span>(<span class="dt">geometry =</span> <span class="st">&quot;224x224x3!&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="st">  </span><span class="kw">image_data</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="st">  </span><span class="kw">as.numeric</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="st">  </span>abind<span class="op">::</span><span class="kw">abind</span>(<span class="dt">along =</span> <span class="dv">0</span>) <span class="co"># expand to batch dimension</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>result &lt;-<span class="st"> </span><span class="kw">predict</span>(model, img)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">mobilenet_decode_predictions</span>(result[,<span class="op">-</span><span class="dv">1</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>])</span></code></pre></div>
 </div>
 </div>
 <div id="simple-transfer-learning" class="section level2">
@@ -348,70 +359,70 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="dataset" class="section level3">
 <h3>Dataset</h3>
 <p>For this example you will use the TensorFlow flowers dataset:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">data_root &lt;-<span class="st"> </span>pins<span class="op">::</span><span class="kw">pin</span>(<span class="st">&quot;https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz&quot;</span>, <span class="st">&quot;flower_photos&quot;</span>)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">data_root &lt;-<span class="st"> </span>fs<span class="op">::</span><span class="kw">path_dir</span>(fs<span class="op">::</span><span class="kw">path_dir</span>(data_root[<span class="dv">100</span>])) <span class="co"># go down 2 levels</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>data_root &lt;-<span class="st"> </span>pins<span class="op">::</span><span class="kw">pin</span>(<span class="st">&quot;https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz&quot;</span>, <span class="st">&quot;flower_photos&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>data_root &lt;-<span class="st"> </span>fs<span class="op">::</span><span class="kw">path_dir</span>(fs<span class="op">::</span><span class="kw">path_dir</span>(data_root[<span class="dv">100</span>])) <span class="co"># go down 2 levels</span></span></code></pre></div>
 <p>The simplest way to load this data into our model is using <code>image_data_generator</code></p>
 <p>All of TensorFlow Hub’s image modules expect float inputs in the [0, 1] range. Use the image_data_generator’s rescale parameter to achieve this.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">image_generator &lt;-<span class="st"> </span><span class="kw">image_data_generator</span>(<span class="dt">rescale =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">255</span>, <span class="dt">validation_split =</span> <span class="fl">0.2</span>)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">training_data &lt;-<span class="st"> </span><span class="kw">flow_images_from_directory</span>(</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="dt">directory =</span> data_root, </a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">  <span class="dt">generator =</span> image_generator,</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">  <span class="dt">target_size =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>), </a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">  <span class="dt">subset =</span> <span class="st">&quot;training&quot;</span></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">)</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">validation_data &lt;-<span class="st"> </span><span class="kw">flow_images_from_directory</span>(</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">  <span class="dt">directory =</span> data_root, </a>
-<a class="sourceLine" id="cb7-11" data-line-number="11">  <span class="dt">generator =</span> image_generator,</a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">  <span class="dt">target_size =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>), </a>
-<a class="sourceLine" id="cb7-13" data-line-number="13">  <span class="dt">subset =</span> <span class="st">&quot;validation&quot;</span></a>
-<a class="sourceLine" id="cb7-14" data-line-number="14">)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>image_generator &lt;-<span class="st"> </span><span class="kw">image_data_generator</span>(<span class="dt">rescale =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">255</span>, <span class="dt">validation_split =</span> <span class="fl">0.2</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>training_data &lt;-<span class="st"> </span><span class="kw">flow_images_from_directory</span>(</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="dt">directory =</span> data_root, </span>
+<span id="cb7-4"><a href="#cb7-4"></a>  <span class="dt">generator =</span> image_generator,</span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="dt">target_size =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>), </span>
+<span id="cb7-6"><a href="#cb7-6"></a>  <span class="dt">subset =</span> <span class="st">&quot;training&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>)</span>
+<span id="cb7-8"><a href="#cb7-8"></a></span>
+<span id="cb7-9"><a href="#cb7-9"></a>validation_data &lt;-<span class="st"> </span><span class="kw">flow_images_from_directory</span>(</span>
+<span id="cb7-10"><a href="#cb7-10"></a>  <span class="dt">directory =</span> data_root, </span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="dt">generator =</span> image_generator,</span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="dt">target_size =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>), </span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="dt">subset =</span> <span class="st">&quot;validation&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>)</span></code></pre></div>
 <p>The resulting object is an iterator that returns <code>image_batch</code>, <code>label_batch pairs</code>.</p>
 </div>
 <div id="download-the-headless-model" class="section level3">
 <h3>Download the headless model</h3>
 <p>TensorFlow Hub also distributes models without the top classification layer. These can be used to easily do transfer learning.</p>
 <p>Any Tensorflow 2 compatible image feature vector URL from tfhub.dev will work here.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">feature_extractor_url &lt;-<span class="st"> &quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/2&quot;</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">feature_extractor_layer &lt;-<span class="st"> </span><span class="kw">layer_hub</span>(<span class="dt">handle =</span> feature_extractor_url)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>feature_extractor_url &lt;-<span class="st"> &quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/2&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>feature_extractor_layer &lt;-<span class="st"> </span><span class="kw">layer_hub</span>(<span class="dt">handle =</span> feature_extractor_url)</span></code></pre></div>
 </div>
 <div id="attach-a-classification-head" class="section level3">
 <h3>Attach a classification head</h3>
 <p>Now we can create our classification model by attaching a classification head into the feature extractor layer. We define the following model:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">input &lt;-<span class="st"> </span><span class="kw">layer_input</span>(<span class="dt">shape =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>, <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">output &lt;-<span class="st"> </span>input <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw">feature_extractor_layer</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">  </span><span class="kw">layer_dense</span>(<span class="dt">units =</span> training_data<span class="op">$</span>num_classes, <span class="dt">activation =</span> <span class="st">&quot;softmax&quot;</span>)</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6">model &lt;-<span class="st"> </span><span class="kw">keras_model</span>(input, output)</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="kw">summary</span>(model)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>input &lt;-<span class="st"> </span><span class="kw">layer_input</span>(<span class="dt">shape =</span> <span class="kw">c</span>(<span class="dv">224</span>, <span class="dv">224</span>, <span class="dv">3</span>))</span>
+<span id="cb9-2"><a href="#cb9-2"></a>output &lt;-<span class="st"> </span>input <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="st">  </span><span class="kw">feature_extractor_layer</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="st">  </span><span class="kw">layer_dense</span>(<span class="dt">units =</span> training_data<span class="op">$</span>num_classes, <span class="dt">activation =</span> <span class="st">&quot;softmax&quot;</span>)</span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a>model &lt;-<span class="st"> </span><span class="kw">keras_model</span>(input, output)</span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="kw">summary</span>(model)</span></code></pre></div>
 </div>
 <div id="train-the-model" class="section level3">
 <h3>Train the model</h3>
 <p>We can now train our model in the same way we would train any other Keras model. We first use <code>compile</code> to configure the training process:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">model <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span><span class="kw">compile</span>(</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">    <span class="dt">loss =</span> <span class="st">&quot;categorical_crossentropy&quot;</span>,</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">    <span class="dt">optimizer =</span> <span class="st">&quot;adam&quot;</span>,</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">    <span class="dt">metrics =</span> <span class="st">&quot;acc&quot;</span></a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">  )</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>model <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="st">  </span><span class="kw">compile</span>(</span>
+<span id="cb10-3"><a href="#cb10-3"></a>    <span class="dt">loss =</span> <span class="st">&quot;categorical_crossentropy&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="dt">optimizer =</span> <span class="st">&quot;adam&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="dt">metrics =</span> <span class="st">&quot;acc&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  )</span></code></pre></div>
 <p>We can then use the <code>fit</code> function to fit our model.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">model <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw">fit_generator</span>(</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">    training_data, </a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">    <span class="dt">steps_per_epoch =</span> training_data<span class="op">$</span>n<span class="op">/</span>training_data<span class="op">$</span>batch_size,</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">    <span class="dt">validation_data =</span> validation_data</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">  )</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>model <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">fit_generator</span>(</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    training_data, </span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="dt">steps_per_epoch =</span> training_data<span class="op">$</span>n<span class="op">/</span>training_data<span class="op">$</span>batch_size,</span>
+<span id="cb11-5"><a href="#cb11-5"></a>    <span class="dt">validation_data =</span> validation_data</span>
+<span id="cb11-6"><a href="#cb11-6"></a>  )</span></code></pre></div>
 <p>You can then export your model with:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">save_model_tf</span>(model, <span class="st">&quot;model&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">save_model_tf</span>(model, <span class="st">&quot;model&quot;</span>)</span></code></pre></div>
 <p>You can also reload the <code>model_from_saved_model</code> function. Note that you need to pass the <code>custom_object</code> with the definition of the KerasLayer since it/s not a default Keras layer.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">reloaded_model &lt;-<span class="st"> </span><span class="kw">load_model_tf</span>(<span class="st">&quot;model&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>reloaded_model &lt;-<span class="st"> </span><span class="kw">load_model_tf</span>(<span class="st">&quot;model&quot;</span>)</span></code></pre></div>
 <p>We can verify that the predictions of both the trained model and the reloaded model are equal:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">steps &lt;-<span class="st"> </span><span class="kw">as.integer</span>(validation_data<span class="op">$</span>n<span class="op">/</span>validation_data<span class="op">$</span>batch_size)</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">all.equal</span>(</a>
-<a class="sourceLine" id="cb14-3" data-line-number="3">  <span class="kw">predict_generator</span>(model, validation_data, <span class="dt">steps =</span> steps),</a>
-<a class="sourceLine" id="cb14-4" data-line-number="4">  <span class="kw">predict_generator</span>(reloaded_model, validation_data, <span class="dt">steps =</span> steps),</a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>steps &lt;-<span class="st"> </span><span class="kw">as.integer</span>(validation_data<span class="op">$</span>n<span class="op">/</span>validation_data<span class="op">$</span>batch_size)</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">all.equal</span>(</span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="kw">predict_generator</span>(model, validation_data, <span class="dt">steps =</span> steps),</span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="kw">predict_generator</span>(reloaded_model, validation_data, <span class="dt">steps =</span> steps),</span>
+<span id="cb14-5"><a href="#cb14-5"></a>)</span></code></pre></div>
 <p>The saved model can also be loaded for inference later or be converted to <a href="https://www.tensorflow.org/lite/convert/">TFLite</a> or <a href="https://github.com/tensorflow/tfjs-converter">TFjs</a>.</p>
 </div>
 </div>
