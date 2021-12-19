@@ -2,13 +2,12 @@
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", 
-  eval = identical(Sys.getenv("EVAL_VIGNETTE", "false"), "true") ||identical(Sys.getenv("CI"), "true") 
+  eval = identical(Sys.getenv("EVAL_VIGNETTE", "false"), "true") || identical(Sys.getenv("CI"), "true") 
 )
 
 ## -----------------------------------------------------------------------------
 #  library(keras)
 #  library(tfhub)
-#  library(magick)
 
 ## -----------------------------------------------------------------------------
 #  classifier_url <- "https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2"
@@ -22,11 +21,15 @@ knitr::opts_chunk$set(
 #  model <- keras_model(input, output)
 
 ## -----------------------------------------------------------------------------
-#  img <- image_read('https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg') %>%
-#    image_resize(geometry = "224x224x3!") %>%
-#    image_data() %>%
-#    as.numeric() %>%
-#    abind::abind(along = 0) # expand to batch dimension
+#  tmp <- tempfile(fileext = ".jpg")
+#  download.file(
+#    'https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg',
+#    tmp
+#  )
+#  img <- image_load(tmp, target_size = c(224, 224)) %>%
+#    image_to_array() %>%
+#    abind::abind(along = 0)
+#  img[] <- img/255
 
 ## ---- echo=FALSE--------------------------------------------------------------
 #  plot(as.raster(img[1,,,]))
@@ -36,11 +39,18 @@ knitr::opts_chunk$set(
 #  mobilenet_decode_predictions(result[,-1, drop = FALSE])
 
 ## -----------------------------------------------------------------------------
-#  data_root <- pins::pin("https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz", "flower_photos")
-#  data_root <- fs::path_dir(fs::path_dir(data_root[100])) # go down 2 levels
+#  if(!dir.exists("flower_photos")) {
+#    url <- "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
+#    tgz <- tempfile(fileext = ".tgz")
+#    download.file(url, destfile = tgz)
+#    utils::untar(tgz, exdir = ".")
+#  }
+#  
+#  data_root <- "flower_photos"
 
 ## -----------------------------------------------------------------------------
 #  image_generator <- image_data_generator(rescale = 1/255, validation_split = 0.2)
+#  
 #  training_data <- flow_images_from_directory(
 #    directory = data_root,
 #    generator = image_generator,

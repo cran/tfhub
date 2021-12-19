@@ -19,11 +19,11 @@ menu:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", 
-  eval = identical(Sys.getenv("EVAL_VIGNETTE", "false"), "true") ||identical(Sys.getenv("CI"), "true") 
+  eval = identical(Sys.getenv("EVAL_VIGNETTE", "false"), "true") || identical(Sys.getenv("CI"), "true") 
 )
 ```
 
-[TensorFlow Hub](http://tensorflow.org/hub) is a way to share pretrained model components. See the TensorFlow Module Hub for a searchable listing of pre-trained models. This tutorial demonstrates:
+[TensorFlow Hub](https://www.tensorflow.org/hub) is a way to share pretrained model components. See the TensorFlow Module Hub for a searchable listing of pre-trained models. This tutorial demonstrates:
 
 1. How to use TensorFlow Hub with Keras.
 2. How to do image classification using TensorFlow Hub.
@@ -34,7 +34,6 @@ knitr::opts_chunk$set(
 ```{r}
 library(keras)
 library(tfhub)
-library(magick)
 ```
 
 ## An ImageNet classifier
@@ -64,11 +63,15 @@ model <- keras_model(input, output)
 Download a single image to try the model on.
 
 ```{r}
-img <- image_read('https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg') %>%
-  image_resize(geometry = "224x224x3!") %>% 
-  image_data() %>% 
-  as.numeric() %>% 
-  abind::abind(along = 0) # expand to batch dimension
+tmp <- tempfile(fileext = ".jpg")
+download.file(
+  'https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg',
+  tmp
+)
+img <- image_load(tmp, target_size = c(224, 224)) %>% 
+  image_to_array() %>% 
+  abind::abind(along = 0)
+img[] <- img/255
 ```
 
 ```{r, echo=FALSE}
@@ -90,8 +93,14 @@ classes in our dataset.
 For this example you will use the TensorFlow flowers dataset:
 
 ```{r}
-data_root <- pins::pin("https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz", "flower_photos")
-data_root <- fs::path_dir(fs::path_dir(data_root[100])) # go down 2 levels
+if(!dir.exists("flower_photos")) {
+  url <- "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
+  tgz <- tempfile(fileext = ".tgz")
+  download.file(url, destfile = tgz)
+  utils::untar(tgz, exdir = ".")
+}
+
+data_root <- "flower_photos"
 ```
 
 The simplest way to load this data into our model is using `image_data_generator`
@@ -100,6 +109,7 @@ All of TensorFlow Hub's image modules expect float inputs in the [0, 1] range. U
 
 ```{r}
 image_generator <- image_data_generator(rescale = 1/255, validation_split = 0.2)
+
 training_data <- flow_images_from_directory(
   directory = data_root, 
   generator = image_generator,

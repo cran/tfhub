@@ -28,12 +28,29 @@ document.addEventListener('DOMContentLoaded', function(e) {
 });
 </script>
 
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -116,6 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -320,29 +338,29 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="instantiating-a-module" class="section level3">
 <h3>Instantiating a Module</h3>
 <p>A TensorFlow Hub module is imported into a TensorFlow program by creating a Module object from a string with its URL or filesystem path, such as:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tfhub)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>m &lt;-<span class="st"> </span><span class="kw">hub_load</span>(<span class="st">&quot;path/to/a/module_dir&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tfhub)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">hub_load</span>(<span class="st">&quot;path/to/a/module_dir&quot;</span>)</span></code></pre></div>
 <p>This adds the module’s variables to the current TensorFlow graph.</p>
 </div>
 <div id="caching-modules" class="section level3">
 <h3>Caching Modules</h3>
 <p>When creating a module from a URL, the module content is downloaded and cached in the local system temporary directory. The location where modules are cached can be overridden using TFHUB_CACHE_DIR environment variable.</p>
 <p>For example, setting <code>TFHUB_CACHE_DIR</code> to <code>/my_module_cache</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">Sys.setenv</span>(<span class="dt">TFHUB_CACHE_DIR =</span> <span class="st">&quot;/my_module_cache&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">TFHUB_CACHE_DIR =</span> <span class="st">&quot;/my_module_cache&quot;</span>)</span></code></pre></div>
 <p>and then creating a module from a URL:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>m &lt;-<span class="st"> </span><span class="kw">hub_load</span>(<span class="st">&quot;https://tfhub.dev/google/progan-128/1&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">hub_load</span>(<span class="st">&quot;https://tfhub.dev/google/progan-128/1&quot;</span>)</span></code></pre></div>
 <p>results in downloading and unpacking the module into <code>/my_module_cache</code>.</p>
 </div>
 <div id="applying-a-module" class="section level3">
 <h3>Applying a Module</h3>
 <p>Once instantiated, a module m can be called zero or more times like a Python function from tensor inputs to tensor outputs:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>y &lt;-<span class="st"> </span><span class="kw">m</span>(x)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">m</span>(x)</span></code></pre></div>
 <p>Each such call adds operations to the current TensorFlow graph to compute <code>y</code> from <code>x</code>. If this involves variables with trained weights, these are shared between all applications.</p>
 <p>Modules can define multiple named signatures in order to allow being applied in more than one way (similar to how Python objects have methods). A module’s documentation should describe the available signatures. The call above applies the signature named “default”. Any signature can be selected by passing its name to the optional <code>signature=</code> argument.</p>
 <p>If a signature has multiple inputs, they must be passed as a dict, with the keys defined by the signature. Likewise, if a signature has multiple outputs, these can be retrieved as a dict by passing as_dict=True, under the keys defined by the signature. (The key <code>&quot;default&quot;</code> is for the single output returned if <code>as_dict=FALSE</code>) So the most general form of applying a Module looks like:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>outputs &lt;-<span class="st"> </span><span class="kw">m</span>(<span class="kw">list</span>(<span class="dt">apples=</span>x1, <span class="dt">oranges=</span>x2), <span class="dt">signature=</span><span class="st">&quot;fruit_to_pet&quot;</span>, <span class="dt">as_dict=</span><span class="ot">TRUE</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a>y1 =<span class="st"> </span>outputs<span class="op">$</span>cats</span>
-<span id="cb5-3"><a href="#cb5-3"></a>y2 =<span class="st"> </span>outputs<span class="op">$</span>dogs</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> <span class="fu">m</span>(<span class="fu">list</span>(<span class="at">apples=</span>x1, <span class="at">oranges=</span>x2), <span class="at">signature=</span><span class="st">&quot;fruit_to_pet&quot;</span>, <span class="at">as_dict=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">=</span> outputs<span class="sc">$</span>cats</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">=</span> outputs<span class="sc">$</span>dogs</span></code></pre></div>
 <p>A caller must supply all inputs defined by a signature, but there is no requirement to use all of a module’s outputs. Module consumers should handle additional outputs gracefully.</p>
 </div>
 </div>
@@ -352,37 +370,37 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3>General approach</h3>
 <p>A Hub Module is simply a TensorFlow graph in the SavedModel format. In order to create a Module you can run the <code>export_savedmodel</code> function with any TensorFlow object.</p>
 <p>For example:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(keras)</span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a>mnist &lt;-<span class="st"> </span><span class="kw">dataset_mnist</span>()</span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a>input &lt;-<span class="st"> </span><span class="kw">layer_input</span>(<span class="kw">shape</span>(<span class="dv">28</span>,<span class="dv">28</span>), <span class="dt">dtype =</span> <span class="st">&quot;int32&quot;</span>)</span>
-<span id="cb6-6"><a href="#cb6-6"></a></span>
-<span id="cb6-7"><a href="#cb6-7"></a>output &lt;-<span class="st"> </span>input <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="st">  </span><span class="kw">layer_flatten</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="st">  </span><span class="kw">layer_lambda</span>(tensorflow<span class="op">::</span><span class="kw">tf_function</span>(<span class="cf">function</span>(x) tf<span class="op">$</span><span class="kw">cast</span>(x, tf<span class="op">$</span>float32)<span class="op">/</span><span class="dv">255</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="st">  </span><span class="kw">layer_dense</span>(<span class="dt">units =</span> <span class="dv">10</span>, <span class="dt">activation =</span> <span class="st">&quot;softmax&quot;</span>)</span>
-<span id="cb6-11"><a href="#cb6-11"></a></span>
-<span id="cb6-12"><a href="#cb6-12"></a>model &lt;-<span class="st"> </span><span class="kw">keras_model</span>(input, output)</span>
-<span id="cb6-13"><a href="#cb6-13"></a></span>
-<span id="cb6-14"><a href="#cb6-14"></a>model <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb6-15"><a href="#cb6-15"></a><span class="st">  </span><span class="kw">compile</span>(</span>
-<span id="cb6-16"><a href="#cb6-16"></a>    <span class="dt">loss =</span> <span class="st">&quot;sparse_categorical_crossentropy&quot;</span>,</span>
-<span id="cb6-17"><a href="#cb6-17"></a>    <span class="dt">optimizer =</span> <span class="st">&quot;adam&quot;</span>,</span>
-<span id="cb6-18"><a href="#cb6-18"></a>    <span class="dt">metrics =</span> <span class="st">&quot;acc&quot;</span></span>
-<span id="cb6-19"><a href="#cb6-19"></a>  )</span>
-<span id="cb6-20"><a href="#cb6-20"></a></span>
-<span id="cb6-21"><a href="#cb6-21"></a>model <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb6-22"><a href="#cb6-22"></a><span class="st">  </span><span class="kw">fit</span>(<span class="dt">x =</span> mnist<span class="op">$</span>train<span class="op">$</span>x, <span class="dt">y =</span> mnist<span class="op">$</span>train<span class="op">$</span>y, <span class="dt">validation_split =</span> <span class="fl">0.2</span>, <span class="dt">epochs =</span><span class="dv">1</span> )</span>
-<span id="cb6-23"><a href="#cb6-23"></a></span>
-<span id="cb6-24"><a href="#cb6-24"></a><span class="kw">save_model_tf</span>(model, <span class="st">&quot;my_module/&quot;</span>, <span class="dt">include_optimizer =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>mnist <span class="ot">&lt;-</span> <span class="fu">dataset_mnist</span>()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>input <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="fu">shape</span>(<span class="dv">28</span>,<span class="dv">28</span>), <span class="at">dtype =</span> <span class="st">&quot;int32&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> input <span class="sc">%&gt;%</span> </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lambda</span>(tensorflow<span class="sc">::</span><span class="fu">tf_function</span>(<span class="cf">function</span>(x) tf<span class="sc">$</span><span class="fu">cast</span>(x, tf<span class="sc">$</span>float32)<span class="sc">/</span><span class="dv">255</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">10</span>, <span class="at">activation =</span> <span class="st">&quot;softmax&quot;</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model</span>(input, output)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss =</span> <span class="st">&quot;sparse_categorical_crossentropy&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimizer =</span> <span class="st">&quot;adam&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="st">&quot;acc&quot;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">x =</span> mnist<span class="sc">$</span>train<span class="sc">$</span>x, <span class="at">y =</span> mnist<span class="sc">$</span>train<span class="sc">$</span>y, <span class="at">validation_split =</span> <span class="fl">0.2</span>, <span class="at">epochs =</span><span class="dv">1</span> )</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">save_model_tf</span>(model, <span class="st">&quot;my_module/&quot;</span>, <span class="at">include_optimizer =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>After exporting the model to the SavedModel format you can load it using <code>hub_load</code>, and use it for predictions for example:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>module &lt;-<span class="st"> </span><span class="kw">hub_load</span>(<span class="st">&quot;my_module/&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a>predictions &lt;-<span class="st"> </span><span class="kw">module</span>(mnist<span class="op">$</span>test<span class="op">$</span>x) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="st">  </span>tf<span class="op">$</span><span class="kw">argmax</span>(<span class="dt">axis =</span> 1L) </span>
-<span id="cb7-5"><a href="#cb7-5"></a></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">mean</span>(<span class="kw">as.integer</span>(predictions) <span class="op">==</span><span class="st"> </span>mnist<span class="op">$</span>test<span class="op">$</span>y)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>module <span class="ot">&lt;-</span> <span class="fu">hub_load</span>(<span class="st">&quot;my_module/&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">module</span>(mnist<span class="sc">$</span>test<span class="sc">$</span>x) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">axis =</span> 1L) </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">as.integer</span>(predictions) <span class="sc">==</span> mnist<span class="sc">$</span>test<span class="sc">$</span>y)</span></code></pre></div>
 <p>Exporting a module serializes its definition together with the current state of its variables in session into the passed path. This can be used when exporting a module for the first time, as well as when exporting a fine tuned module.</p>
 <p>Module publishers should implement a <a href="https://www.tensorflow.org/hub/common_signatures/index">common signature</a> when possible, so that consumers can easily exchange modules and find the best one for their problem.</p>
 </div>

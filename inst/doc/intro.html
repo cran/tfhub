@@ -28,12 +28,29 @@ document.addEventListener('DOMContentLoaded', function(e) {
 });
 </script>
 
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -116,6 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -326,69 +344,68 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>You can install the released version of tfhub from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;tfhub&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;tfhub&quot;</span>)</span></code></pre></div>
 <p>And the development version from <a href="https://github.com/">GitHub</a> with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># install.packages(&quot;devtools&quot;)</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;rstudio/tfhub&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;devtools&quot;)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;rstudio/tfhub&quot;</span>)</span></code></pre></div>
 <p>After installing the tfhub package you need to install the TensorFlow Hub python module:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(tfhub)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">install_tfhub</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tfhub)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install_tfhub</span>()</span></code></pre></div>
 </div>
 <div id="loading-modules" class="section level2">
 <h2>Loading modules</h2>
 <p>Modules can be loaded from URL’s and local paths using <code>hub_load()</code></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>module &lt;-<span class="st"> </span><span class="kw">hub_load</span>(<span class="st">&quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>module <span class="ot">&lt;-</span> <span class="fu">hub_load</span>(<span class="st">&quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/2&quot;</span>)</span></code></pre></div>
 <p>Module’s behave like functions and can be called with Tensors eg:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>input &lt;-<span class="st"> </span>tf<span class="op">$</span>random<span class="op">$</span><span class="kw">uniform</span>(<span class="dt">shape =</span> <span class="kw">shape</span>(<span class="dv">1</span>,<span class="dv">224</span>,<span class="dv">224</span>,<span class="dv">3</span>), <span class="dt">minval =</span> <span class="dv">0</span>, <span class="dt">maxval =</span> <span class="dv">1</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a>output &lt;-<span class="st"> </span><span class="kw">module</span>(input)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>input <span class="ot">&lt;-</span> tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">uniform</span>(<span class="at">shape =</span> <span class="fu">shape</span>(<span class="dv">1</span>,<span class="dv">224</span>,<span class="dv">224</span>,<span class="dv">3</span>), <span class="at">minval =</span> <span class="dv">0</span>, <span class="at">maxval =</span> <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">module</span>(input)</span></code></pre></div>
 </div>
 <div id="using-with-keras" class="section level2">
 <h2>Using with Keras</h2>
 <p>The easiest way to get started with tfhub is using <code>layer_hub</code>. A Keras layer that loads a TensorFlow Hub module and prepares it for using with your model.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(tfhub)</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">library</span>(keras)</span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a>input &lt;-<span class="st"> </span><span class="kw">layer_input</span>(<span class="dt">shape =</span> <span class="kw">c</span>(<span class="dv">32</span>, <span class="dv">32</span>, <span class="dv">3</span>))</span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a>output &lt;-<span class="st"> </span>input <span class="op">%&gt;%</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="st">  </span><span class="co"># we are using a pre-trained MobileNet model!</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="st">  </span><span class="kw">layer_hub</span>(<span class="dt">handle =</span> <span class="st">&quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/2&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="st">  </span><span class="kw">layer_dense</span>(<span class="dt">units =</span> <span class="dv">10</span>, <span class="dt">activation =</span> <span class="st">&quot;softmax&quot;</span>)</span>
-<span id="cb6-10"><a href="#cb6-10"></a></span>
-<span id="cb6-11"><a href="#cb6-11"></a>model &lt;-<span class="st"> </span><span class="kw">keras_model</span>(input, output)</span>
-<span id="cb6-12"><a href="#cb6-12"></a></span>
-<span id="cb6-13"><a href="#cb6-13"></a>model <span class="op">%&gt;%</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="st">  </span><span class="kw">compile</span>(</span>
-<span id="cb6-15"><a href="#cb6-15"></a>    <span class="dt">loss =</span> <span class="st">&quot;sparse_categorical_crossentropy&quot;</span>,</span>
-<span id="cb6-16"><a href="#cb6-16"></a>    <span class="dt">optimizer =</span> <span class="st">&quot;adam&quot;</span>,</span>
-<span id="cb6-17"><a href="#cb6-17"></a>    <span class="dt">metrics =</span> <span class="st">&quot;accuracy&quot;</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tfhub)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>input <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(<span class="dv">32</span>, <span class="dv">32</span>, <span class="dv">3</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> input <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we are using a pre-trained MobileNet model!</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_hub</span>(<span class="at">handle =</span> <span class="st">&quot;https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/2&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">10</span>, <span class="at">activation =</span> <span class="st">&quot;softmax&quot;</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model</span>(input, output)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss =</span> <span class="st">&quot;sparse_categorical_crossentropy&quot;</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimizer =</span> <span class="st">&quot;adam&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="st">&quot;accuracy&quot;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
 <p>We can then fit our model in the CIFAR10 dataset:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>cifar &lt;-<span class="st"> </span><span class="kw">dataset_cifar10</span>()</span>
-<span id="cb7-2"><a href="#cb7-2"></a>cifar<span class="op">$</span>train<span class="op">$</span>x &lt;-<span class="st"> </span>tf<span class="op">$</span>image<span class="op">$</span><span class="kw">resize</span>(cifar<span class="op">$</span>train<span class="op">$</span>x<span class="op">/</span><span class="dv">255</span>, <span class="dt">size =</span> <span class="kw">shape</span>(<span class="dv">224</span>,<span class="dv">224</span>))</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a>model <span class="op">%&gt;%</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="st">  </span><span class="kw">fit</span>(</span>
-<span id="cb7-6"><a href="#cb7-6"></a>    <span class="dt">x =</span> cifar<span class="op">$</span>train<span class="op">$</span>x,</span>
-<span id="cb7-7"><a href="#cb7-7"></a>    <span class="dt">y =</span> cifar<span class="op">$</span>train<span class="op">$</span>y,</span>
-<span id="cb7-8"><a href="#cb7-8"></a>    <span class="dt">validation_split =</span> <span class="fl">0.2</span>,</span>
-<span id="cb7-9"><a href="#cb7-9"></a>    <span class="dt">batch_size =</span> <span class="dv">128</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cifar <span class="ot">&lt;-</span> <span class="fu">dataset_cifar10</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cifar<span class="sc">$</span>train<span class="sc">$</span>x <span class="ot">&lt;-</span> tf<span class="sc">$</span>image<span class="sc">$</span><span class="fu">resize</span>(cifar<span class="sc">$</span>train<span class="sc">$</span>x<span class="sc">/</span><span class="dv">255</span>, <span class="at">size =</span> <span class="fu">shape</span>(<span class="dv">224</span>,<span class="dv">224</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> cifar<span class="sc">$</span>train<span class="sc">$</span>x,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> cifar<span class="sc">$</span>train<span class="sc">$</span>y,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">validation_split =</span> <span class="fl">0.2</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_size =</span> <span class="dv">128</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="using-with-tfdatasets" class="section level2">
 <h2>Using with tfdatasets</h2>
-<p>tfhub can also be used with tfdatasets since it provides implementations of <code>feature_columns</code>:</p>
+<p>tfhub can also be used with tfdatasets:</p>
 <ul>
 <li><code>hub_text_embedding_column()</code></li>
 <li><code>hub_sparse_text_embedding_column()</code></li>
 <li><code>hub_image_embedding_column()</code></li>
 </ul>
-<p>You can find a working example <a href="https://github.com/rstudio/tfhub/tree/master/vignettes/examples/feature_column.R">here</a>.</p>
 </div>
 <div id="using-with-recipes" class="section level2">
 <h2>Using with <code>recipes</code></h2>
 <p>tfhub adds a <code>step_pretrained_text_embedding</code> that can be used with the <a href="https://github.com/tidymodels/recipes">recipes</a> package.</p>
-<p>An example can be found <a href="https://github.com/rstudio/tfhub/blob/master/vignettes/examples/recipes.R">here</a>.</p>
+<p>An example can be found <a href="https://github.com/rstudio/tfhub/blob/main/vignettes/examples/recipes.R">here</a>.</p>
 </div>
 <div id="tfhub.dev" class="section level2">
 <h2>tfhub.dev</h2>
